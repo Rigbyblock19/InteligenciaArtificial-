@@ -1,0 +1,43 @@
+ALGORITMO A_ESTRELLA(grafo, heuristicas, inicio, meta)
+    ENTRADA: 
+        grafo: diccionario <nodo, lista de (vecino, costo)>
+        heuristicas: diccionario <nodo, valor_heurístico>
+        inicio: nodo inicial
+        meta: nodo objetivo
+    SALIDA:
+        tupla (camino_optimo, costo_total) o (None, infinito)
+
+1.  INICIALIZACIÓN
+    cola_prioridad ← cola vacía
+    // Cada elemento de la cola: (f, g, nodo, camino)
+    INSERTAR(cola_prioridad, (heuristicas[inicio], 0, inicio, [inicio]))
+    
+    visitados ← diccionario vacío  // almacena mejor g para cada nodo
+
+2.  BUCLE PRINCIPAL
+    MIENTRAS cola_prioridad NO esté vacía HACER
+        // Extraer nodo con menor f (mayor prioridad)
+        (f, g, nodo_actual, camino) ← EXTRAER_MINIMO(cola_prioridad)
+        
+        // Verificar si es la meta
+        SI nodo_actual == meta ENTONCES
+            RETORNAR (camino, g)
+        
+        // Verificar si debemos procesar este nodo
+        SI nodo_actual NO ESTÁ en visitados O g < visitados[nodo_actual] ENTONCES
+            // Registrar el mejor costo encontrado
+            visitados[nodo_actual] ← g
+            
+            // Expandir vecinos
+            PARA CADA (vecino, costo_arista) EN grafo[nodo_actual] HACER
+                nuevo_g ← g + costo_arista
+                nuevo_f ← nuevo_g + heuristicas[vecino]  // si no existe, usar 0
+                
+                nuevo_camino ← camino + [vecino]
+                INSERTAR(cola_prioridad, (nuevo_f, nuevo_g, vecino, nuevo_camino))
+            FIN PARA
+        FIN SI
+    FIN MIENTRAS
+
+3.  TERMINACIÓN SIN ÉXITO
+    RETORNAR (None, infinito)
